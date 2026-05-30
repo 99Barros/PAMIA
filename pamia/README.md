@@ -30,39 +30,31 @@ Para garantir a padronização do ambiente entre todos os integrantes do grupo, 
 ## 🚀 Como rodar o projeto localmente
 
 1. **Clone o repositório:**
-   ```bash
-   git clone https://github.com/99Barros/PAMIA.git
+```
+git clone https://github.com/99Barros/PAMIA.git
+```
 Acesse a pasta do projeto:
-
-Bash
+```
 cd PAMIA
+```
 Instale as dependências base do projeto:
 
-Bash
+```
 npm install
+```
 Instale as dependências de Navegação (React Navigation):
 
-Bash
+```
 npm install @react-navigation/native @react-navigation/native-stack
 npx expo install react-native-screens react-native-safe-area-context
+```
 Inicie o servidor do Expo:
 
-Bash
+```
 npx expo start
+```
 Abra no Emulador: Com o Android Studio aberto e o emulador rodando, pressione a tecla a no terminal onde o Expo está executando para abrir o aplicativo no dispositivo virtual Android.
 
-📁 Estrutura de Pastas (Em construção)
-Plaintext
-PAMIA/
-│
-├── src/
-│   └── screens/
-│       ├── TelaInicial.js   # Portão de Entrada (Passageiro/Motorista)
-│       └── TelaLogin.js     # Fluxo de autenticação
-│
-├── App.js                   # Orquestrador de Rotas
-├── package.json
-└── README.md
 ⚙️ Diretrizes de Execução (Kanban)
 Para manter o fluxo contínuo e sem sobrecargas, adotamos as seguintes regras de desenvolvimento ágil:
 
