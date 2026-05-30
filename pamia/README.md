@@ -1,6 +1,3 @@
-Basta substituir o conteúdo no seu repositório:
-
-Markdown
 # PAMIA - Prevenção ao Assédio contra Mulheres com Inteligência Artificial
 
 Este repositório contém o código-fonte do App Simulador de Demonstração do projeto PAMIA, focado nos Objetivos de Desenvolvimento Sustentável (ODS) 5 (Igualdade de Gênero) e 11 (Cidades e Comunidades Sustentáveis).
