@@ -31,7 +31,7 @@ Para garantir a padronização do ambiente entre todos os integrantes do grupo, 
 
 1. **Clone o repositório:**
    ```bash
-   git clone [https://github.com/99Barros/PAMIA.git](https://github.com/99Barros/PAMIA.git)
+   git clone https://github.com/99Barros/PAMIA.git
 Acesse a pasta do projeto:
 
 Bash
