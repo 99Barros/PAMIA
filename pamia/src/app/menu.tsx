@@ -18,7 +18,6 @@ const MENU_PASSAGEIRO = [
 
 const MENU_MOTORISTA = [
   { label: 'Minhas Corridas', icon: '🚗' },
-  { label: 'Aceitar Corrida', icon: '✅' },
   { label: 'Histórico', icon: '📋' },
   { label: 'Configurações', icon: '⚙️' },
 ];
