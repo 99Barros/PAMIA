@@ -16,9 +16,9 @@ import time
 SAMPLE_RATE = 16000
 CHANNELS = 1
 BLOCK_SIZE = 16000
-DEVICE_INDEX = None # Mude para o número do seu microfone se der erro -1
+DEVICE_INDEX = None
 
-audio_queue = queue.Queue()
+audio_queue = queue.Queue(maxsize=5) # Guarda no maximo 5 segundos da fila
 
 # ==========================================
 # CLASSIFICADOR YAMNET
@@ -146,59 +146,45 @@ class TranscritorVosk:
         else:
             audio_normalizado = audio_chunk_float32
             
-        # 2. Conversão otimizada e segura para Int16
+        # 2. Conversão otimizada para Int16
         audio_int16 = (audio_normalizado * 32767).astype(np.int16)
         
         # 3. Converte a matriz para bytes puros
         dados_bytes = audio_int16.tobytes()
         
         texto_detectado = ""
+        is_final = False
         
         if self.recognizer.AcceptWaveform(dados_bytes):
             resultado = json.loads(self.recognizer.Result())
             texto_detectado = resultado.get("text", "")
+            is_final = True
         else:
             resultado = json.loads(self.recognizer.PartialResult())
             texto_detectado = resultado.get("partial", "")
             
-        return texto_detectado.lower()
-def processar_audio(self, audio_chunk_float32):
-        # 1. Normalização de Pico (Maximiza o volume do bloco dinamicamente)
-        max_amp = np.max(np.abs(audio_chunk_float32))
-        
-        # Evita divisão por zero em casos de silêncio absoluto
-        if max_amp > 0:
-            audio_normalizado = audio_chunk_float32 / max_amp
-        else:
-            audio_normalizado = audio_chunk_float32
-            
-        # 2. Conversão otimizada e segura para Int16
-        audio_int16 = (audio_normalizado * 32767).astype(np.int16)
-        dados_bytes = audio_int16.tobytes()
-        
-        texto_detectado = ""
-        if self.recognizer.AcceptWaveform(dados_bytes):
-            resultado = json.loads(self.recognizer.Result())
-            texto_detectado = resultado.get("text", "")
-        else:
-            resultado = json.loads(self.recognizer.PartialResult())
-            texto_detectado = resultado.get("partial", "")
-            
-        return texto_detectado.lower()
+        return texto_detectado.lower(), is_final
 
 # ==========================================
 # CAPTURA E DSP
 # ==========================================
+
 def audio_callback(indata, frames, time, status):
     if status:
         print(f"⚠️ Status de Áudio: {status}", flush=True)
     audio_data = indata.flatten().astype(np.float32)
-    audio_queue.put(audio_data)
+
+    try:
+        audio_queue.put_nowait(audio_data)
+    except queue.Full:
+        print("⚠️ Gargalo de CPU: Fila cheia, descartando bloco de áudio!")
 
 def iniciar_escuta():
     # 1. INICIALIZA AS IAs ANTES DE ABRIR O MICROFONE
     classificador = ClassificadorYAMNet('yamnet.tflite', 'yamnet_class_map.csv')
     transcritor = TranscritorVosk(model_path="modelo_pt")
+
+    palavras_penalizadas_na_frase_atual = set()
     
     # 2. INSTANCIA O MOTOR DE RISCO AQUI
     motor_risco = MotorDeRisco(limite_alarme=100, decaimento_por_segundo=5)
@@ -231,18 +217,31 @@ def iniciar_escuta():
                     pontos_neste_bloco += 40
                 
                 # 2. Análise Semântica (Vosk)
-                texto = transcritor.processar_audio(audio_chunk)
+                texto, is_final = transcritor.processar_audio(audio_chunk)
                 if texto:
                     print(f"📝 Vosk ouviu: '{texto}'")
-                    palavras_ditas = texto.split()
-                    
+                    palavras_ditas = set(texto.split())
+
+                    # Palavras que JÁ foram penalizadas
+                    novas_palavras_a_avaliar = palavras_ditas - palavras_penalizadas_na_frase_atual
                     # Busca por palavras e atribui os pesos
                     for categoria, config in transcritor.dicionario_risco.items():
-                        if any(p in palavras_ditas for p in config["palavras"]):
+                        # Interseção: tem alguma palavra de risco nas NOVAS palavras faladas?
+                        palavras_de_risco_encontradas = novas_palavras_a_avaliar.intersection(config["palavras"])
+                        
+                        if palavras_de_risco_encontradas:
                             peso = config["peso"]
-                            print(f"⚠️ Semântico: Marcador de {categoria} detectado! (+{peso} pts)")
+                            palavra_gatilho = list(palavras_de_risco_encontradas)[0] # Pega a palavra que ativou
+                            
+                            print(f"⚠️ Semântico: Marcador '{palavra_gatilho}' ({categoria}) detectado! (+{peso} pts)")
                             pontos_neste_bloco += peso
-                            break # Evita pontuar duas vezes a mesma categoria na mesma frase
+                            
+                            # Salva a palavra na memória para não pontuar de novo no próximo segundo
+                            palavras_penalizadas_na_frase_atual.update(palavras_de_risco_encontradas)
+                            break 
+
+                if is_final:
+                    palavras_penalizadas_na_frase_atual.clear()
 
                 # 3. Atualiza o Balde Furado
                 alarme_disparado = motor_risco.processar_evento(pontos_neste_bloco)
