@@ -10,7 +10,7 @@ VIDEOS_DIR = PROJECT_DIR / 'videos'
 MODEL_PATH = str(MODELS_DIR / 'pose_landmarker_full.task')
 
 # Vídeo padrão (pode ser trocado pela linha de comando: python main.py outro.mp4 ou python main.py 0 para webcam)
-VIDEO_PATH = str(VIDEOS_DIR / 'uber2.mp4')
+VIDEO_PATH = str(VIDEOS_DIR / 'cenario_02.mp4')
 
 # Confiança mínima do MediaPipe (valores baixos aceitam esqueletos "fantasma")
 MIN_DETECTION_CONFIDENCE = 0.5

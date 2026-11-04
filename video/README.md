@@ -15,15 +15,14 @@ video/
 │   ├── zone_crop.py     # Detecção adicional em recortes
 │   └── calibrate.py     # Calibração automática e manual
 ├── models/              # Pose Landmarker lite, full e heavy
-├── videos/              # Todos os MP4, sem cópias idênticas duplicadas
+├── videos/              # Dois cenários versionados e vídeos locais ignorados
 ├── testemediapipe.py     # Experimento interativo com webcam
 └── requirements.txt
 ```
 
-Os oito vídeos mantêm os nomes originais: `before_sunrise_trem.mp4`,
-`before_surise_encontro.mp4`, `Driver_touches_passenger_knee_20261012135539.mp4`,
-`falso_assedio.mp4`, `ia_tocando_coxa.mp4`, `uber.mp4`, `uber2.mp4` e
-`video_teste.mp4`. Os nomes não constituem anotações validadas dos eventos.
+Apenas `cenario_01.mp4` e `cenario_02.mp4` são versionados. Outros vídeos podem
+ficar nessa pasta para testes locais e são ignorados pelo Git. Os nomes dos
+cenários não constituem anotações validadas dos eventos.
 
 ## Instalação e execução
 
@@ -35,12 +34,12 @@ py -3.12 -m venv video/.venv
 ./video/.venv/Scripts/python.exe -m video.app.main
 ```
 
-O vídeo padrão é `videos/uber2.mp4` e o modelo padrão é `models/pose_landmarker_full.task`.
+O vídeo padrão é `videos/cenario_02.mp4` e o modelo padrão é `models/pose_landmarker_full.task`.
 Esses caminhos são resolvidos a partir de `config.py`, independentemente da pasta
 de execução. Caminhos fornecidos na linha de comando são relativos à pasta atual:
 
 ```powershell
-./video/.venv/Scripts/python.exe -m video.app.main video/videos/uber.mp4
+./video/.venv/Scripts/python.exe -m video.app.main video/videos/cenario_01.mp4
 ./video/.venv/Scripts/python.exe -m video.app.main 0
 ```
 
@@ -54,8 +53,8 @@ Cada posição de câmera precisa de zonas adequadas. A calibração grava o blo
 `ZONES` em `video/app/config.py`; use um trecho com os ocupantes sentados normalmente.
 
 ```powershell
-./video/.venv/Scripts/python.exe -m video.app.calibrate video/videos/uber2.mp4 --inicio 0 --segundos 3
-./video/.venv/Scripts/python.exe -m video.app.calibrate video/videos/uber2.mp4 --manual
+./video/.venv/Scripts/python.exe -m video.app.calibrate video/videos/cenario_02.mp4 --inicio 0 --segundos 3
+./video/.venv/Scripts/python.exe -m video.app.calibrate video/videos/cenario_02.mp4 --manual
 ```
 
 A calibração automática nomeia o ocupante mais à direita como motorista e usa
