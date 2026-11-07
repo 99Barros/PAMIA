@@ -1,0 +1,4 @@
+# Versões do ambiente usado para validar a migração (Python 3.12).
+mediapipe==1.0.1
+opencv-contrib-python==5.0.0.93
+numpy==2.5.2
