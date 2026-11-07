@@ -1,4 +1,4 @@
-name: SDK - CI/CD (JitPack Ready)
+name:  SDK - CI/CD (JitPack Ready)
 
 on:
   push:
@@ -24,19 +24,19 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: /app_demonstrativo/package-lock.json'
+          cache-dependency-path: '/app_demonstrativo/package-lock.json'
 
       - name: Instalar Dependências
         run: npm ci
-        working-directory: ./app_demonstrativo
+        working-directory: .//app_demonstrativo
 
       - name: Executar Linter
         run: npm run lint --if-present
-        working-directory: ./app_demonstrativo
+        working-directory: .//app_demonstrativo
 
       - name: Executar Testes Unitários
         run: npm test --if-present
-        working-directory: ./app_demonstrativo
+        working-directory: .//app_demonstrativo
 
   # -------------------------------------------------------------
   # ETAPA 2: Validação de Compilação Android (Garante que o SDK compila)
@@ -59,18 +59,18 @@ jobs:
 
       - name: Dar permissão ao Gradle Wrapper
         run: chmod +x gradlew
-        working-directory: ./app_demonstrativo/android
+        working-directory: .//app_demonstrativo/android
         continue-on-error: true
 
       - name: Testar Compilação do SDK (Assemble)
         run: |
           ./gradlew assembleRelease --no-daemon
-        working-directory: ./app_demonstrativo/android
+        working-directory: .//app_demonstrativo/android
 
       - name: Armazenar Artefato de Teste (Upload opcional)
         uses: actions/upload-artifact@v4
         with:
-          name:-sdk-build-test
+          name: -sdk-build-test
           path: |
-          /app_demonstrativo/android/app/build/outputs/aar/*.aar
+            /app_demonstrativo/android/app/build/outputs/aar/*.aar
           retention-days: 3
