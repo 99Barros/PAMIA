@@ -1,4 +1,4 @@
-name: PAMIA SDK - Pipeline CI/CD (TCC)
+name: PAMIA SDK - CI/CD (JitPack Ready)
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   # -------------------------------------------------------------
-  # ETAPA 1: Validação de Qualidade e Testes Unitários
+  # ETAPA 1: Validação de Qualidade e Testes Unitários (Node.js)
   # -------------------------------------------------------------
   quality-and-tests:
     name: 1. Lint & Testes Unitários
@@ -24,21 +24,25 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: 'PAMIA/app_demonstrativo/package-lock.json'
 
       - name: Instalar Dependências
         run: npm ci
+        working-directory: ./PAMIA/app_demonstrativo
 
       - name: Executar Linter
         run: npm run lint --if-present
+        working-directory: ./PAMIA/app_demonstrativo
 
       - name: Executar Testes Unitários
         run: npm test --if-present
+        working-directory: ./PAMIA/app_demonstrativo
 
   # -------------------------------------------------------------
-  # ETAPA 2: Build do SDK Android (.aar / APK de Demonstração)
+  # ETAPA 2: Validação de Compilação Android (Garante que o SDK compila)
   # -------------------------------------------------------------
-  build-android:
-    name: 2. Compilação do SDK Android
+  build-android-validation:
+    name: 2. Validação de Build Gradle
     needs: quality-and-tests
     runs-on: ubuntu-latest
 
@@ -54,47 +58,19 @@ jobs:
           cache: 'gradle'
 
       - name: Dar permissão ao Gradle Wrapper
-        run: chmod +x android/gradlew
+        run: chmod +x gradlew
+        working-directory: ./PAMIA/app_demonstrativo/android
         continue-on-error: true
 
-      - name: Compilar Artefato Release
+      - name: Testar Compilação do SDK (Assemble)
         run: |
-          cd android
           ./gradlew assembleRelease --no-daemon
+        working-directory: ./PAMIA/app_demonstrativo/android
 
-      - name: Armazenar Artefato de Build (Upload Artifact)
+      - name: Armazenar Artefato de Teste (Upload opcional)
         uses: actions/upload-artifact@v4
         with:
-          name: pamia-sdk-binaries
+          name: pamia-sdk-build-test
           path: |
-            android/app/build/outputs/apk/release/*.apk
-            android/build/outputs/aar/*.aar
-          retention-days: 7
-
-  # -------------------------------------------------------------
-  # ETAPA 3: Publicação de Release (Acionada apenas por Tags)
-  # -------------------------------------------------------------
-  publish-release:
-    name: 3. Publicar Release dos Artefatos
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: build-android
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout do Código
-        uses: actions/checkout@v4
-
-      - name: Download dos Artefatos Compilados
-        uses: actions/download-artifact@v4
-        with:
-          name: pamia-sdk-binaries
-          path: build-output
-
-      - name: Criar GitHub Release Automatizada
-        uses: softprops/action-gh-release@v1
-        with:
-          files: build-output/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            PAMIA/app_demonstrativo/android/app/build/outputs/aar/*.aar
+          retention-days: 3
