@@ -1,0 +1,19 @@
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+
+group = 'br.com.pamia.bridge'
+version = '1.0.0'
+
+android {
+    namespace 'br.com.pamia.bridge'
+    defaultConfig { versionCode 1; versionName '1.0.0' }
+}
+
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+// Baixa a versão publicada; o AAR local não participa da compilação.
+dependencies {
+    implementation("com.github.DevSpinola:pamia-sdk:v0.1.0-alpha.2")
+}
