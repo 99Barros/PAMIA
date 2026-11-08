@@ -15,5 +15,5 @@ repositories {
 
 // Baixa a versão publicada; o AAR local não participa da compilação.
 dependencies {
-    implementation("com.github.DevSpinola:pamia-sdk:v0.1.0-alpha.2")
+    implementation("com.github.DevSpinola:pamia-sdk:0.1.0-alpha.5")
 }

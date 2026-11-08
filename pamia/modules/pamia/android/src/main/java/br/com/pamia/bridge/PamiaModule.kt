@@ -9,5 +9,6 @@ class PamiaModule : Module() {
     override fun definition() = ModuleDefinition {
         Name("Pamia")
         Function("obterVersao") { Pamia.obterVersao() }
+        Function("olaMundo") { Pamia.olaMundo() }
     }
 }
