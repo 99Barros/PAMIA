@@ -1,0 +1,42 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.3, pytest-9.2.0, pluggy-1.7.0 -- /home/joaobarros/Documentos/Repositorios/PAMIA/audio/venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/joaobarros/Documentos/Repositorios/PAMIA/qa
+plugins: platformdirs-4.12.4, cov-7.1.0
+collecting ... collected 23 items
+
+tests/test_desempenho_local.py::test_desempenho_local_50_ciclos PASSED   [  4%]
+tests/test_sdk_local.py::test_threshold_multimodal[False-False-True-MANTER_ESTADO] PASSED [  8%]
+tests/test_sdk_local.py::test_threshold_multimodal[True-True-False-ACIONAR_ALERTA_LOCAL] PASSED [ 13%]
+tests/test_sdk_local.py::test_threshold_multimodal[True-False-False-ACUMULAR_RISCO] PASSED [ 17%]
+tests/test_sdk_local.py::test_threshold_multimodal[False-True-False-ACUMULAR_RISCO] PASSED [ 21%]
+tests/test_sdk_local.py::test_threshold_multimodal[False-False-False-MANTER_ESTADO] PASSED [ 26%]
+tests/test_sdk_local.py::test_avl_sanitizacao_score[-0.1-0.0] PASSED     [ 30%]
+tests/test_sdk_local.py::test_avl_sanitizacao_score[0.0-0.0] PASSED      [ 34%]
+tests/test_sdk_local.py::test_avl_sanitizacao_score[0.1-0.1] PASSED      [ 39%]
+tests/test_sdk_local.py::test_avl_sanitizacao_score[69.9-69.9] PASSED    [ 43%]
+tests/test_sdk_local.py::test_avl_sanitizacao_score[70.0-70.0] PASSED    [ 47%]
+tests/test_sdk_local.py::test_avl_sanitizacao_score[100.0-100.0] PASSED  [ 52%]
+tests/test_sdk_local.py::test_avl_sanitizacao_score[100.1-100.0] PASSED  [ 56%]
+tests/test_sdk_local.py::test_avl_invasao_espacial[-0.1-DISTANCIA_INVALIDA] PASSED [ 60%]
+tests/test_sdk_local.py::test_avl_invasao_espacial[0.0-TRIGGER_ESPACIAL] PASSED [ 65%]
+tests/test_sdk_local.py::test_avl_invasao_espacial[0.1-TRIGGER_ESPACIAL] PASSED [ 69%]
+tests/test_sdk_local.py::test_avl_invasao_espacial[34.9-TRIGGER_ESPACIAL] PASSED [ 73%]
+tests/test_sdk_local.py::test_avl_invasao_espacial[35.0-TRIGGER_ESPACIAL] PASSED [ 78%]
+tests/test_sdk_local.py::test_avl_invasao_espacial[35.1-SEM_INVASAO] PASSED [ 82%]
+tests/test_sdk_local.py::test_avl_invasao_espacial[nan-ENTRADA_INVALIDA] PASSED [ 86%]
+tests/test_sdk_local.py::test_avl_invasao_espacial[inf-ENTRADA_INVALIDA] PASSED [ 91%]
+tests/test_sdk_local.py::test_calculo_distancia_e_inferencia_mockada PASSED [ 95%]
+tests/test_sdk_local.py::test_calculo_distancia_rejeita_nan PASSED       [100%]
+
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.3-final-0 ________________
+
+Name                     Stmts   Miss Branch BrPart  Cover   Missing
+--------------------------------------------------------------------
+pamia_sdk/__init__.py        0      0      0      0   100%
+pamia_sdk/geometria.py      17      0     10      0   100%
+pamia_sdk/threshold.py      14      0     10      0   100%
+--------------------------------------------------------------------
+TOTAL                       31      0     20      0   100%
+============================== 23 passed in 0.29s ==============================
