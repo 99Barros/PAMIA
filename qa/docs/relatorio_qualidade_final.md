@@ -106,4 +106,27 @@ Processamento Local | Ciclos: 50 | Sucessos: 50 | Tempo médio: X.XXXX ms
 | BUG-01 | Alta | `geometria.py` | Coordenadas `NaN` emitidas em quadros ocluídos do MediaPipe propagavam erro matemático não tratado na thread de fundo. | Validação explícita com `math.isnan` / `math.isinf` descarta o quadro inválido e levanta `ValueError` controlado. | ✅ Corrigido |
 | BUG-02 | Média | `threshold.py` | Score negativo em transição rápida reduzia o acumulador abaixo de zero. | Implementação de `sanitizar_score()` aplicando piso `0.0` e teto `100.0`. | ✅ Corrigido |
 
-> Adicione novos defeitos encontrados durante a execução real nesta tabela.
+
+### Validação de entradas e testes de regressão
+
+Durante a etapa de testes exploratórios, foram identificadas inconsistências no tratamento de entradas inválidas nos componentes de geometria e sanitização da pontuação de risco. As falhas envolveram a propagação de valores não numéricos (`NaN`) e a utilização de parâmetros de limite espacial inválidos.
+
+Após a identificação desses comportamentos, foram implementadas validações adicionais nas funções `sanitizar_score()` e `avaliar_invasao_espacial()`, acompanhadas da ampliação da suíte automatizada.
+
+Na execução de regressão, realizada em ambiente Linux com Python 3.13.3, Pytest 9.2.0 e pytest-cov 7.1.0, foram executados 29 casos de teste, todos aprovados, sem falhas ou erros. A execução teve duração de 0,31 segundo.
+
+A análise de cobertura, considerando os módulos `qa/pamia_sdk/geometria.py` e `qa/pamia_sdk/threshold.py`, apresentou 100% de cobertura das 39 instruções e dos 26 branches instrumentados, sem instruções não executadas ou branches parcialmente cobertos.
+
+Os resultados demonstram a correção dos comportamentos identificados no escopo testado e a manutenção da compatibilidade com os casos de teste anteriores. Ressalta-se que a cobertura apresentada se restringe aos módulos auxiliares de QA, não representando a cobertura integral dos componentes de áudio, vídeo ou da aplicação móvel do PAMIA.
+
+### Avaliação de repetibilidade do processamento local
+
+Com o objetivo de avaliar a repetibilidade do processamento das funções auxiliares do PAMIA, foram realizadas cinco execuções independentes de um microbenchmark desenvolvido em Python e integrado à suíte Pytest.
+
+Cada execução compreendeu 50 ciclos de processamento, totalizando 250 ciclos avaliados. Todos os ciclos produziram os resultados funcionais esperados, correspondendo a uma taxa de sucesso de 100%.
+
+Os tempos médios por ciclo registrados nas cinco execuções foram, respectivamente, 0,0077 ms, 0,0077 ms, 0,0076 ms, 0,0059 ms e 0,0099 ms. A média das cinco medições foi de 0,00776 ms, com mediana de 0,0077 ms.
+
+O experimento foi executado em ambiente Linux, utilizando processador AMD Ryzen 5 7535HS e Python 3.13.3.
+
+**Limitações:** o experimento contempla exclusivamente funções auxiliares de geometria e decisão multimodal. Não foram executadas inferências reais dos modelos MediaPipe e YAMNet, nem realizadas medições de consumo energético, temperatura ou desempenho em dispositivos Android. Dessa maneira, os resultados não comprovam integralmente o atendimento ao requisito RNF01, constituindo evidência parcial de desempenho do processamento lógico local.

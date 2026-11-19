@@ -1,8 +1,7 @@
-.venv/
-venv/
-__pycache__/
-*.py[cod]
 .coverage
 .coverage.*
 htmlcov/
 .pytest_cache/
+__pycache__/
+*.py[cod]
+.venv/
