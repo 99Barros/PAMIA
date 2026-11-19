@@ -1,6 +1,6 @@
 # PAMIA
 PAMIA (Prevenção ao Assédio contra Mulheres com Inteligência Artificial ) - Projeto dedicado ao TCC
 
-- [Módulo de vídeo](video/README.md): análise de pose, calibração e invasão espacial em Python.
-- [Módulo de áudio](audio/README.md).
-- [Aplicativo móvel](pamia/README.md).
+- [Módulo de vídeo](video/README.md): Estimar poses corporais e detectar invasão espacial
+- [Módulo de áudio](audio/README.md): Identificar padrões acústicos e expressões verbais de risco
+- [Aplicativo móvel](pamia/README.md): Disponibilizar a interface móvel de demonstração
