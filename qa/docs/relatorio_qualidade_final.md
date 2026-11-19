@@ -1,132 +1,96 @@
 # Relatório Final de Qualidade — Módulo C
-# Projeto: PAMIA — Prevenção ao Assédio contra Mulheres com Inteligência Artificial
-# Disciplina: Qualidade de Software (PFC)
 
----
+**Projeto:** PAMIA — Prevenção ao Assédio contra Mulheres com Inteligência Artificial  
+**Disciplina:** Qualidade de Software — PFC  
+**Ambiente:** Linux, Python 3.13.3, Pytest 9.2.0 e pytest-cov 7.1.0  
+**Data das evidências iniciais:** 18/11/2026
 
-> [!NOTE]
-> Evidências reais geradas em **18/11/2026** — Python 3.13.3, pytest 9.2.0.
-> **23/23 testes aprovados | Cobertura total: 100%.**
+## 1. Automação e Execução
 
----
+A validação foi realizada com Pytest, utilizando testes parametrizados (`@pytest.mark.parametrize`), análise de valores-limite, classes de equivalência, tabela de decisão, mocks, testes exploratórios e microbenchmark.
 
-## 1. Comandos de Execução (Terminal do VS Code)
+Execução a partir do diretório `qa/`:
 
 ```bash
-# 1. Instalar dependências (apenas na primeira vez)
-pip install pytest pytest-cov
-
-# 2. Executar suíte com cobertura — cole o output abaixo
-pytest --cov=pamia_sdk --cov-report=term-missing -v
-
-# 3. Executar teste de desempenho local — cole o output abaixo
-python tests/test_desempenho_local.py
+python -m pytest tests/ -v \
+  --cov=pamia_sdk \
+  --cov-branch \
+  --cov-report=term-missing \
+  --junitxml=resultado-testes.xml
 ```
 
----
+### Resultados da última execução informada
 
-## 2. Resumo de Execução e Cobertura (`pytest --cov`)
+| Métrica | Resultado |
+|---|---:|
+| Testes executados | 32 |
+| Testes aprovados | 32 |
+| Testes reprovados | 0 |
+| Taxa de aprovação | 100% |
+| Instruções cobertas | 39/39 |
+| Branches cobertos | 26/26 |
+| Cobertura dos módulos auxiliares | 100% |
 
-```
-=============================== test session starts ===============================
-platform linux -- Python 3.13.3, pytest-9.2.0, pluggy-1.7.0 -- /home/joaobarros/Documentos/Repositorios/PAMIA/audio/venv/bin/python3
-cachedir: .pytest_cache
-rootdir: /home/joaobarros/Documentos/Repositorios/PAMIA/qa
-plugins: platformdirs-4.12.4, cov-7.1.0
-collected 23 items
+A cobertura compreende exclusivamente os arquivos `qa/pamia_sdk/geometria.py` e `qa/pamia_sdk/threshold.py`. Não representa a cobertura total do aplicativo PAMIA.
 
-tests/test_desempenho_local.py::test_desempenho_local_50_ciclos PASSED      [  4%]
-tests/test_sdk_local.py::test_threshold_multimodal[False-False-True-MANTER_ESTADO] PASSED [  8%]
-tests/test_sdk_local.py::test_threshold_multimodal[True-True-False-ACIONAR_ALERTA_LOCAL] PASSED [ 13%]
-tests/test_sdk_local.py::test_threshold_multimodal[True-False-False-ACUMULAR_RISCO] PASSED [ 17%]
-tests/test_sdk_local.py::test_threshold_multimodal[False-True-False-ACUMULAR_RISCO] PASSED [ 21%]
-tests/test_sdk_local.py::test_threshold_multimodal[False-False-False-MANTER_ESTADO] PASSED [ 26%]
-tests/test_sdk_local.py::test_avl_sanitizacao_score[-0.1-0.0] PASSED        [ 30%]
-tests/test_sdk_local.py::test_avl_sanitizacao_score[0.0-0.0] PASSED         [ 34%]
-tests/test_sdk_local.py::test_avl_sanitizacao_score[0.1-0.1] PASSED         [ 39%]
-tests/test_sdk_local.py::test_avl_sanitizacao_score[69.9-69.9] PASSED       [ 43%]
-tests/test_sdk_local.py::test_avl_sanitizacao_score[70.0-70.0] PASSED       [ 47%]
-tests/test_sdk_local.py::test_avl_sanitizacao_score[100.0-100.0] PASSED     [ 52%]
-tests/test_sdk_local.py::test_avl_sanitizacao_score[100.1-100.0] PASSED     [ 56%]
-tests/test_sdk_local.py::test_avl_invasao_espacial[-0.1-DISTANCIA_INVALIDA] PASSED [ 60%]
-tests/test_sdk_local.py::test_avl_invasao_espacial[0.0-TRIGGER_ESPACIAL] PASSED [ 65%]
-tests/test_sdk_local.py::test_avl_invasao_espacial[0.1-TRIGGER_ESPACIAL] PASSED [ 69%]
-tests/test_sdk_local.py::test_avl_invasao_espacial[34.9-TRIGGER_ESPACIAL] PASSED [ 73%]
-tests/test_sdk_local.py::test_avl_invasao_espacial[35.0-TRIGGER_ESPACIAL] PASSED [ 78%]
-tests/test_sdk_local.py::test_avl_invasao_espacial[35.1-SEM_INVASAO] PASSED [ 82%]
-tests/test_sdk_local.py::test_avl_invasao_espacial[nan-ENTRADA_INVALIDA] PASSED [ 86%]
-tests/test_sdk_local.py::test_avl_invasao_espacial[inf-ENTRADA_INVALIDA] PASSED [ 91%]
-tests/test_sdk_local.py::test_calculo_distancia_e_inferencia_mockada PASSED [ 95%]
-tests/test_sdk_local.py::test_calculo_distancia_rejeita_nan PASSED          [100%]
+A suíte evoluiu de 23 para 29 e, posteriormente, 32 testes, incluindo verificações adicionais de entradas inválidas e cenários de decisão multimodal.
 
-================================= tests coverage ==================================
-_________________ coverage: platform linux, python 3.13.3-final-0 _________________
+## 2. Matriz de Rastreabilidade
 
-Name                     Stmts   Miss  Cover   Missing
-------------------------------------------------------
-pamia_sdk/__init__.py        0      0   100%
-pamia_sdk/geometria.py      17      0   100%
-pamia_sdk/threshold.py      14      0   100%
-------------------------------------------------------
-TOTAL                       31      0   100%
-=============================== 23 passed in 0.30s ================================
-```
+| Requisito | Casos — Módulo B | Testes automatizados | Situação |
+|---|---|---|---|
+| RF01 — Detecção espacial | CT-05, CT-06, CT-07, CT-08 | `test_avl_invasao_espacial`, `test_calculo_distancia_e_inferencia_mockada`, `test_calculo_distancia_rejeita_nan` e testes adicionais de validação | Auxiliar aprovado |
+| RF02 — Detecção acústica | CT-01, CT-09 | `test_threshold_multimodal` com sinal acústico simulado | Parcial |
+| RF03 — Decisão multimodal | CT-01 a CT-04, CT-09 | `test_threshold_multimodal`, `test_avl_sanitizacao_score` e validações adicionais | Auxiliar aprovado |
+| RNF01 — Desempenho local | Teste de desempenho | `test_desempenho_local_50_ciclos` | Parcial |
 
----
+Os cenários acústicos avaliam o tratamento de um sinal booleano simulado, não a classificação real de áudio. Os testes de geometria e decisão também não demonstram integração completa com os componentes de produção.
 
-## 3. Resultado do Teste de Desempenho Local
+## 3. Registro de Defeitos e Regressão
 
-```
-[ PREENCHER APÓS EXECUÇÃO — cole aqui o output do terminal ]
+| ID | Severidade estimada | Problema identificado | Correção / Verificação |
+|---|---|---|---|
+| BUG-01 | Alta | Coordenadas não finitas poderiam comprometer o cálculo geométrico auxiliar | Validação de `NaN` e infinito, com rejeição por `ValueError` |
+| BUG-02 | Média | Ausência de tratamento consistente de valores fora da faixa de pontuação | Sanitização para o intervalo de 0 a 100 |
+| BUG-03 | Média | Parâmetros espaciais inválidos poderiam produzir classificações inadequadas | Validação de limites negativos, `NaN` e infinito |
 
-Exemplo do formato esperado:
-Processamento Local | Ciclos: 50 | Sucessos: 50 | Tempo médio: X.XXXX ms
-```
+As correções foram submetidas a testes de regressão. A última execução informada apresentou 32 casos aprovados, sem falhas.
 
----
+Os defeitos se referem aos módulos auxiliares de QA. Não há evidência de que essas ocorrências tenham sido reproduzidas durante inferência real de MediaPipe ou YAMNet.
 
-## 4. Matriz de Rastreabilidade
+## 4. Teste de Desempenho
 
-| Requisito (PFC) | Caso de Teste (Módulo B) | Função Pytest (Módulo C) | Status |
-|:---|:---|:---|:---:|
-| RF01 — Detecção Espacial / Vídeo | CT-01 / AVL Invasão Espacial | `test_avl_invasao_espacial`, `test_calculo_distancia_e_inferencia_mockada` | ✅ Aprovado |
-| RF02 — Detecção Acústica / DSP | CT-01 (Fusão Áudio) | `test_threshold_multimodal` (cenários com `audio=True`) | ✅ Aprovado |
-| RF03 — Threshold & Decaimento | CT-02, CT-03 | `test_threshold_multimodal`, `test_avl_sanitizacao_score` | ✅ Aprovado |
-| RNF01 — Desempenho Local / Borda | Teste de Concorrência | `test_desempenho_local_50_ciclos` | ✅ Aprovado |
+Foi executado um microbenchmark das funções auxiliares de geometria e decisão multimodal, com cinco execuções independentes de 50 ciclos cada.
 
-> Após executar os testes, atualize a coluna **Status** com `Aprovado` ou `Reprovado` e
-> registre eventuais defeitos na seção abaixo.
+| Execução | Ciclos corretos | Tempo médio por ciclo |
+|---|---:|---:|
+| 1 | 50/50 | 0,0077 ms |
+| 2 | 50/50 | 0,0077 ms |
+| 3 | 50/50 | 0,0076 ms |
+| 4 | 50/50 | 0,0059 ms |
+| 5 | 50/50 | 0,0099 ms |
+| **Total / Média** | **250/250** | **0,00776 ms** |
 
----
+**Taxa de erros funcionais observados:** 0%.
 
-## 5. Registro de Defeitos Identificados e Corrigidos
+Os valores representam o tempo médio do processamento lógico medido pelo experimento, sem incluir captura de câmera, microfone, inferência de modelos ou latência completa do SDK.
 
-| ID | Severidade | Módulo | Descrição do Defeito | Correção Aplicada | Status |
-|:---|:---:|:---|:---|:---|:---:|
-| BUG-01 | Alta | `geometria.py` | Coordenadas `NaN` emitidas em quadros ocluídos do MediaPipe propagavam erro matemático não tratado na thread de fundo. | Validação explícita com `math.isnan` / `math.isinf` descarta o quadro inválido e levanta `ValueError` controlado. | ✅ Corrigido |
-| BUG-02 | Média | `threshold.py` | Score negativo em transição rápida reduzia o acumulador abaixo de zero. | Implementação de `sanitizar_score()` aplicando piso `0.0` e teto `100.0`. | ✅ Corrigido |
+## 5. Avaliação de Qualidade e Limitações
 
+A automação apresentou resultados satisfatórios no escopo avaliado, com aprovação dos casos funcionais e cobertura integral dos módulos auxiliares instrumentados.
 
-### Validação de entradas e testes de regressão
+Entretanto, permanecem limitações relevantes:
 
-Durante a etapa de testes exploratórios, foram identificadas inconsistências no tratamento de entradas inválidas nos componentes de geometria e sanitização da pontuação de risco. As falhas envolveram a propagação de valores não numéricos (`NaN`) e a utilização de parâmetros de limite espacial inválidos.
+- RF02: ausência de execução real dos classificadores acústicos.
+- RF03: lógica booleana simplificada, sem acumulação numérica ou decaimento temporal contínuo.
+- RNF01: ausência de medições de consumo energético e desempenho em smartphone Android.
+- IHC: avaliação realizada por inspeção estática do aplicativo demonstrativo, sem teste presencial com usuários.
+- Integração: módulos auxiliares ainda não comprovadamente integrados ao fluxo completo de produção.
 
-Após a identificação desses comportamentos, foram implementadas validações adicionais nas funções `sanitizar_score()` e `avaliar_invasao_espacial()`, acompanhadas da ampliação da suíte automatizada.
+## 6. Conclusão
 
-Na execução de regressão, realizada em ambiente Linux com Python 3.13.3, Pytest 9.2.0 e pytest-cov 7.1.0, foram executados 29 casos de teste, todos aprovados, sem falhas ou erros. A execução teve duração de 0,31 segundo.
+Os testes automatizados do PAMIA demonstraram comportamento consistente dos módulos auxiliares de geometria, sanitização e decisão multimodal, incluindo tratamento de entradas inválidas e verificação de cenários parametrizados.
 
-A análise de cobertura, considerando os módulos `qa/pamia_sdk/geometria.py` e `qa/pamia_sdk/threshold.py`, apresentou 100% de cobertura das 39 instruções e dos 26 branches instrumentados, sem instruções não executadas ou branches parcialmente cobertos.
+O processo permitiu identificar problemas, aplicar correções e verificar regressões. Os resultados constituem evidências de qualidade do escopo testado, não uma certificação da aplicação completa.
 
-Os resultados demonstram a correção dos comportamentos identificados no escopo testado e a manutenção da compatibilidade com os casos de teste anteriores. Ressalta-se que a cobertura apresentada se restringe aos módulos auxiliares de QA, não representando a cobertura integral dos componentes de áudio, vídeo ou da aplicação móvel do PAMIA.
-
-### Avaliação de repetibilidade do processamento local
-
-Com o objetivo de avaliar a repetibilidade do processamento das funções auxiliares do PAMIA, foram realizadas cinco execuções independentes de um microbenchmark desenvolvido em Python e integrado à suíte Pytest.
-
-Cada execução compreendeu 50 ciclos de processamento, totalizando 250 ciclos avaliados. Todos os ciclos produziram os resultados funcionais esperados, correspondendo a uma taxa de sucesso de 100%.
-
-Os tempos médios por ciclo registrados nas cinco execuções foram, respectivamente, 0,0077 ms, 0,0077 ms, 0,0076 ms, 0,0059 ms e 0,0099 ms. A média das cinco medições foi de 0,00776 ms, com mediana de 0,0077 ms.
-
-O experimento foi executado em ambiente Linux, utilizando processador AMD Ryzen 5 7535HS e Python 3.13.3.
-
-**Limitações:** o experimento contempla exclusivamente funções auxiliares de geometria e decisão multimodal. Não foram executadas inferências reais dos modelos MediaPipe e YAMNet, nem realizadas medições de consumo energético, temperatura ou desempenho em dispositivos Android. Dessa maneira, os resultados não comprovam integralmente o atendimento ao requisito RNF01, constituindo evidência parcial de desempenho do processamento lógico local.
+O protótipo permanece sujeito a futuras avaliações de integração audiovisual, desempenho em dispositivo Android e usabilidade com usuários.
