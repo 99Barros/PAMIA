@@ -1,4 +1,4 @@
-name:  SDK - CI/CD (JitPack Ready)
+name: PAMIA SDK - CI/CD Pipeline
 
 on:
   push:
@@ -8,69 +8,72 @@ on:
     branches: [ "main", "develop" ]
 
 jobs:
-  # -------------------------------------------------------------
-  # ETAPA 1: Validação de Qualidade e Testes Unitários (Node.js)
-  # -------------------------------------------------------------
+  # ---------------------------------------------------------------------------
+  # JOB 1: Qualidade de Código, Linter e Testes Unitários (Ecossistema Node.js)
+  # ---------------------------------------------------------------------------
   quality-and-tests:
     name: 1. Lint & Testes Unitários
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout do Repositório
+      - name: Checkout do Código-Fonte
         uses: actions/checkout@v4
 
-      - name: Configurar Node.js (Ambiente de Dev)
+      - name: Configurar Ambiente Node.js (Versão 20)
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: '/app_demonstrativo/package-lock.json'
+          # Aponta diretamente para o lockfile dentro da subpasta do app demonstrativo
+          cache-dependency-path: 'pamia/app_demonstrativo/package-lock.json'
 
-      - name: Instalar Dependências
+      - name: Instalar Dependências (Clean Install)
         run: npm ci
-        working-directory: .//app_demonstrativo
+        working-directory: ./pamia/app_demonstrativo
 
-      - name: Executar Linter
+      - name: Executar Análise Estática (Linter)
         run: npm run lint --if-present
-        working-directory: .//app_demonstrativo
+        working-directory: ./pamia/app_demonstrativo
 
-      - name: Executar Testes Unitários
+      - name: Executar Suíte de Testes Unitários
         run: npm test --if-present
-        working-directory: .//app_demonstrativo
+        working-directory: ./pamia/app_demonstrativo
 
-  # -------------------------------------------------------------
-  # ETAPA 2: Validação de Compilação Android (Garante que o SDK compila)
-  # -------------------------------------------------------------
+  # ---------------------------------------------------------------------------
+  # JOB 2: Validação de Build do SDK Android (Ecossistema Java & Gradle)
+  # ---------------------------------------------------------------------------
   build-android-validation:
     name: 2. Validação de Build Gradle
     needs: quality-and-tests
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout do Repositório
+      - name: Checkout do Código-Fonte
         uses: actions/checkout@v4
 
-      - name: Configurar Java JDK 17
+      - name: Configurar Java JDK 17 (Padrão Android Moderno)
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: 'gradle'
 
-      - name: Dar permissão ao Gradle Wrapper
+      - name: Conceder Permissão de Execução ao Gradle Wrapper
         run: chmod +x gradlew
-        working-directory: .//app_demonstrativo/android
+        working-directory: ./pamia/app_demonstrativo/android
         continue-on-error: true
 
-      - name: Testar Compilação do SDK (Assemble)
+      - name: Executar Compilação de Teste do SDK (Assemble Release)
         run: |
-          ./gradlew assembleRelease --no-daemon
-        working-directory: .//app_demonstrativo/android
+          ./gradlew assembleRelease --no-daemon \
+            -Dorg.gradle.jvmargs="-Xmx2048m -Dfile.encoding=UTF-8"
+        working-directory: ./pamia/app_demonstrativo/android
 
-      - name: Armazenar Artefato de Teste (Upload opcional)
+      - name: Armazenar Artefato Binário de Teste (.aar)
         uses: actions/upload-artifact@v4
         with:
-          name: -sdk-build-test
+          name: pamia-sdk-aar-output
           path: |
-            /app_demonstrativo/android/app/build/outputs/aar/*.aar
-          retention-days: 3
+            pamia/app_demonstrativo/android/app/build/outputs/aar/*.aar
+            pamia/app_demonstrativo/android/build/outputs/apk/release/*.apk
+          retention-days: 5
