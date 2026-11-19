@@ -23,9 +23,20 @@ export default function TelaCadastro() {
   const [senha, setSenha] = useState('');
 
   const validateEmail = (value: string) => {
-    if (value.length === 0) return setEmailError('');
-    if (!value.includes('@')) return setEmailError('E-mail deve conter "@"');
-    if (!value.includes('.com')) return setEmailError('E-mail deve conter ".com"');
+    const email = value.trim();
+
+    if (email.length === 0) {
+      setEmailError('');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      setEmailError('Digite um e-mail válido. Ex: nome@dominio.com');
+      return;
+    }
+
     setEmailError('');
   };
 
