@@ -41,3 +41,8 @@ example
 # generated native folders
 /ios
 /android
+
+# Binários e resultados de build não devem ser versionados.
+/modules/pamia/android/libs/*.aar
+/modules/pamia/android/build/
+/dist-sdk-check/
