@@ -1,127 +1,127 @@
-# Plano de Testes — Módulo A (ISO/IEC 29119)
-# Projeto: PAMIA — Prevenção ao Assédio contra Mulheres com Inteligência Artificial
-# Disciplina: Qualidade de Software (PFC)
+# Plano de Testes — Módulo A (ISO/IEC/IEEE 29119)
 
----
+**Projeto:** PAMIA — Prevenção ao Assédio contra Mulheres com Inteligência Artificial  
+**Disciplina:** Qualidade de Software — PFC  
+**Equipe:** 4 integrantes (2 desenvolvimento/QA e 2 documentação)  
+**Versão:** MVP — Protótipo em desenvolvimento
 
-## 1. Identificação
+## 1. Objetivo e Escopo
 
-| Campo | Valor |
-|---|---|
-| **Projeto** | PAMIA SDK Mobile (Android / React Native) |
-| **Versão** | MVP — Entrega Única Final |
-| **Equipe** | 4 integrantes (2 técnicos Dev/QA + 2 documentação) |
-| **Padrão** | ISO/IEC 29119 |
+Este plano, fundamentado na ISO/IEC/IEEE 29119, estabelece a estratégia, os critérios e os recursos para validar componentes auxiliares do PAMIA.
 
----
-
-## 2. Escopo
-
-### 2.1 Itens Testados
-
-| Módulo | Descrição |
-|---|---|
-| **Vídeo (MediaPipe/OpenCV)** | Extração de keypoints e cálculo de distância euclidiana 3D para detecção de invasão espacial |
-| **Áudio (DSP/YAMNet TFLite)** | Pré-filtragem DSP e classificação acústica local para detecção de padrões de pânico |
-| **Lógica de Integração** | Fusão multimodal, threshold probabilístico e decaimento temporal (*time decay*) local |
-
-### 2.2 Itens **Não** Testados (Fora do Escopo)
-
-- Servidor B2B de destino das centrais de monitoramento
-- Disparo de webhooks externos / HTTPS para terceiros
-- Infraestrutura de nuvem das empresas de transporte parceiras
-- Detecção do sinal universal de socorro
-
----
-
-## 3. Estratégia de Teste
-
-- Testes **unitários e de integração** automatizados em Python (`pytest`).
-- Técnicas de **caixa-preta**: Particionamento em Classes de Equivalência e Análise de Valor-Limite (AVL) em 2 rotinas do SDK.
-- **Tabela de Decisão** para a fusão multimodal (vídeo + áudio + decaimento temporal).
-- **Mocks** (`unittest.mock`) para isolar extratores de pose (MediaPipe) e classificadores acústicos (YAMNet) sem dependência de hardware.
-- **Simulação de carga concorrente** (50 threads) para validar o desempenho do processamento local de borda.
-
----
-
-## 4. Ambiente de Teste
-
-| Item | Requisito |
-|---|---|
-| **Linguagem** | Python 3.11+ |
-| **Framework de Testes** | `pytest` + `pytest-cov` |
-| **Dependências** | `math`, `unittest.mock`, `concurrent.futures` (stdlib) |
-| **Instalação** | `pip install pytest pytest-cov` |
-
----
-
-## 5. Critérios de Entrada
-
-- Código-fonte do SDK estruturado nos módulos `pamia_sdk/geometria.py` e `pamia_sdk/threshold.py`.
-- Ambiente Python configurado com `pytest` e `pytest-cov` instalados.
-- Suíte de testes presente em `tests/test_sdk_local.py` e `tests/test_desempenho_local.py`.
-
----
-
-## 6. Critérios de Saída
-
-- 100% dos casos de teste críticos (*Must Have*) executados e aprovados.
-- Relatório de cobertura gerado via `pytest --cov=pamia_sdk --cov-report=term-missing -v`.
-- Defeitos críticos (severidade **Alta**) corrigidos e fechados antes da entrega.
-
----
-
-## 7. Análise de Pontos de Função (APF) — Escopo Local
-
-| Componente / Função | Tipo | Complexidade | PFB |
-|:---|:---:|:---:|:---:|
-| Módulo de Vídeo (MediaPipe/OpenCV) | Entrada Externa (EI) | Média | 4 |
-| Módulo de Áudio (DSP/YAMNet) | Entrada Externa (EI) | Média | 4 |
-| Lógica de Threshold (Fusão Multimodal) | Consulta Externa (EQ) | Simples | 3 |
-| Acionamento de Alerta Local (Callback SDK) | Saída Externa (EO) | Simples | 4 |
-| Configurações e Limiares do SDK | Arquivo Lógico Interno (ALI) | Simples | 7 |
-| Estado de Risco e Log Local | Arquivo Lógico Interno (ALI) | Simples | 7 |
-| Modelos Pré-Treinados (MediaPipe / YAMNet) | Arquivo de Interface Externa (AIE) | Simples | 5 |
-| **Total de Pontos de Função Brutos (PFB)** | | | **34** |
-
-> **ALI** — Dados mantidos internamente pelo SDK/aplicação local.  
-> **AIE** — Referências/modelos externos consumidos em memória/disco apenas para leitura durante a inferência.
-
----
-
-## 8. Modelo COCOMO II — Estimativa de Esforço
-
-### 8.1 Parâmetros de Entrada
-
-| Parâmetro | Valor |
-|---|---|
-| **Tamanho (SLOC)** | ≈ 2.500 linhas (Python / TypeScript / Java nativo integrado) → KSLOC = 2.5 |
-| **Modo** | Semi-Detached (equipe mista com experiência intermediária/avançada) |
-| **Coeficientes** | A = 2.94 · B = 1.09 · C = 3.67 · D = 0.28 |
-
-### 8.2 Memória de Cálculo
-
-**Esforço Nominal (PM):**
-
-$$PM = A \times (KSLOC)^B = 2{,}94 \times (2{,}5)^{1{,}09} \approx 8{,}1 \text{ Pessoas-Mês}$$
-
-**Prazo de Desenvolvimento (TDEV):**
-
-$$TDEV = C \times (PM)^D = 3{,}67 \times (8{,}1)^{0{,}28} \approx 4{,}8 \text{ meses}$$
-
-**Dimensionamento médio:**
-
-$$\text{Equipe} = \frac{PM}{TDEV} = \frac{8{,}1}{4{,}8} \approx 1{,}7 \text{ pessoas ativas}$$
-
-### 8.3 Alocação dos 4 Integrantes
-
-| Métrica / Recurso | Valor Calculado | Alocação Real |
+| Componente | Funcionalidade testada | Requisito |
 |---|---|---|
-| Esforço Total | 8,1 Pessoas-Mês | Distribuído entre desenvolvimento e testes |
-| Prazo Estimado | 4,8 Meses | Alinhado ao cronograma do PFC |
-| Equipe Técnica (Dev/QA) | ~1,7 FTE | **2 integrantes** (código, IA, automação) |
-| Equipe de Apoio | — | **2 integrantes** (documentação e relatórios) |
+| Geometria | Distância euclidiana 3D e invasão espacial | RF01 |
+| Score | Sanitização entre 0 e 100 e entradas inválidas | RF03 |
+| Decisão multimodal | Combinações de vídeo, áudio e indicador de decaimento | RF03 |
+| Desempenho | Simulação de ciclos concorrentes | RNF01 (parcial) |
 
-> A divisão 2 técnicos + 2 documentação valida o dimensionamento: os 2 integrantes de documentação
-> absorvem a carga textual sem onerar os multiplicadores de esforço da engenharia, ajustando
-> positivamente os EM de PCAP e PLEX.
+**Fora do escopo:** inferência real de MediaPipe/YAMNet, processamento acústico completo (RF02), integração Android, monitoramento térmico, serviços B2B e webhooks.
+
+## 2. Estratégia e Ambiente de Testes
+
+São utilizados testes unitários automatizados com Pytest, aplicando classes de equivalência, análise de valores-limite (AVL), tabela de decisão com oito combinações booleanas e testes de regressão.
+
+O `unittest.mock` simula coordenadas de um extrator de pose, sem executar MediaPipe. O desempenho é avaliado por um microbenchmark de 50 ciclos concorrentes das funções auxiliares.
+
+**Ambiente:** Linux, Python 3.13.3, Pytest 9.2.0, pytest-cov 7.1.0 e processador AMD Ryzen 5 7535HS.
+
+Execução a partir de `qa/`:
+
+```bash
+python -m pytest tests/ -v \
+  --cov=pamia_sdk --cov-branch \
+  --cov-report=term-missing \
+  --junitxml=resultado-testes.xml
+```
+
+## 3. Critérios de Entrada e Saída
+
+**Entrada:** código disponível, ambiente configurado, testes automatizados definidos e resultados esperados documentados.
+
+**Saída:** todos os testes críticos executados e aprovados, ausência de defeitos graves conhecidos no escopo validado, relatório de cobertura e registro de defeitos e retestes.
+
+**Resultados observados:**
+
+| Indicador | Resultado |
+|---|---:|
+| Testes executados / aprovados | 32 / 32 |
+| Cobertura dos módulos auxiliares | 100% |
+| Instruções cobertas | 39/39 |
+| Branches cobertos | 26/26 |
+| Ciclos de desempenho | 250/250 corretos |
+| Tempo médio por ciclo | 0,00776 ms |
+
+A cobertura refere-se exclusivamente a `qa/pamia_sdk/geometria.py` e `threshold.py`. O teste de desempenho não inclui inferência real nem execução no Android.
+
+## 4. Análise de Pontos de Função (APF)
+
+Foi realizada uma estimativa funcional preliminar para o SDK local:
+
+| Função candidata | Tipo | PF |
+|---|---|---:|
+| Entrada de eventos visuais | EE | 4 |
+| Entrada de eventos acústicos | EE | 4 |
+| Consulta do estado de decisão | CE | 3 |
+| Emissão de alerta | SE | 4 |
+| Configurações e limiares | ALI | 7 |
+| Estado de risco e logs | ALI | 7 |
+| Dados externos de referência | AIE | 5 |
+| **Total preliminar** | | **34** |
+
+Os 34 pontos representam uma aproximação acadêmica. As classificações e complexidades ainda dependem de validação por DET, RET e FTR, especialmente a classificação de dados externos como AIE. Não se trata de uma contagem IFPUG definitiva.
+
+## 5. Estimativa de Esforço — COCOMO II
+
+Adotou-se o modelo COCOMO II Post-Architecture com parâmetros nominais e tamanho aproximado de 2.500 SLOC (2,5 KSLOC).
+
+**Parâmetros:** A = 2,94; B = 0,91; C = 3,67; D = 0,28; soma dos fatores de escala = 18,97; produto dos multiplicadores de esforço = 1.
+
+**Expoente de escala:**
+
+\[
+E=0{,}91+0{,}01(18{,}97)=1{,}0997
+\]
+
+**Esforço estimado:**
+
+\[
+PM=2{,}94(2{,}5)^{1{,}0997}\approx8{,}05\text{ pessoas-mês}
+\]
+
+**Prazo nominal:**
+
+\[
+F=0{,}28+0{,}2(E-0{,}91)=0{,}31794
+\]
+
+\[
+TDEV=3{,}67(8{,}05)^{0{,}31794}\approx7{,}12\text{ meses}
+\]
+
+**Equipe nominal média:**
+
+\[
+8{,}05/7{,}12\approx1{,}13\text{ FTE}
+\]
+
+### Disponibilidade da Equipe
+
+O PAMIA possui dois desenvolvedores, cada um com oito horas semanais disponíveis, totalizando 16 horas por semana ou **0,4 FTE**, considerando jornada referencial de 40 horas.
+
+Uma conversão simplificada do esforço estimado pela capacidade técnica disponível resulta em aproximadamente 20,1 meses, caso todo o esforço fosse atribuído aos dois desenvolvedores. Esse valor não substitui o prazo nominal do COCOMO II.
+
+Os outros dois integrantes atuam prioritariamente na documentação. A estimativa possui caráter acadêmico e não considera detalhadamente código reutilizado, produtividade histórica e dedicação documental.
+
+## 6. Considerações Finais
+
+O plano estabelece uma estratégia reproduzível de verificação funcional, análise de limites, automação e registro de defeitos. Os 32 testes aprovados e a cobertura integral dos módulos auxiliares representam resultados positivos no escopo avaliado.
+
+Contudo, a validação não abrange integralmente os componentes reais de inteligência artificial e o aplicativo móvel. A APF e o COCOMO II são estimativas preliminares de planejamento, com limitações explicitadas.
+
+## Referências
+
+- BOEHM, B. et al. *Software Cost Estimation with COCOMO II*. Prentice Hall, 2000.
+- ISO/IEC/IEEE 29119. *Software and Systems Engineering — Software Testing*.
+- IFPUG. *Function Point Counting Practices Manual*.
+- PRESSMAN, R.; MAXIM, B. *Engenharia de Software: Uma Abordagem Profissional*. 9. ed., 2021.
