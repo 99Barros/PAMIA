@@ -1,91 +1,127 @@
-# Design de Testes Funcionais, IHC & Usabilidade — Módulo B
-# Projeto: PAMIA — Prevenção ao Assédio contra Mulheres com Inteligência Artificial
-# Disciplina: Qualidade de Software (PFC)
+# Design de Testes Funcionais, IHC e Usabilidade — Módulo B
 
----
+**Projeto:** PAMIA — Prevenção ao Assédio contra Mulheres com Inteligência Artificial  
+**Disciplina:** Qualidade de Software — PFC
 
-## 1. Rotina 1 — Threshold de Risco Acumulado (`Score` de 0 a 100)
+## 1. Classes de Equivalência e Análise de Valor-Limite (AVL)
 
-### 1.1 Particionamento em Classes de Equivalência
+### 1.1 Rotina 1 — Sanitização do Score (0 a 100)
 
-| Classe | Faixa / Condição | Comportamento Esperado |
-|:---|:---|:---|
-| **CE1 (Válida)** | 0 ≤ Score ≤ 69 | Operação normal — nenhum alerta disparado |
-| **CE2 (Válida)** | 70 ≤ Score ≤ 100 | Alerta crítico local acionado |
-| **CE3 (Inválida)** | Score < 0 | Rejeitar/sanitizar para piso `0.0` (BUG-02 corrigido) |
-| **CE4 (Inválida)** | Score > 100 | Rejeitar/sanitizar para teto `100.0` |
+A função `sanitizar_score()` restringe a pontuação ao intervalo de 0 a 100. Ela não aciona alertas; a decisão multimodal é avaliada separadamente.
 
-### 1.2 Análise de Valor-Limite (AVL)
+| Classe | Condição | Resultado esperado |
+|---|---|---|
+| CE1 — Válida | 0 ≤ Score ≤ 100 | Preservar valor |
+| CE2 — Fora da faixa | Score < 0 | Retornar 0 |
+| CE3 — Fora da faixa | Score > 100 | Retornar 100 |
+| CE4 — Inválida | NaN, +Inf ou -Inf | Lançar `ValueError` |
 
-| Valor de Teste | Classe | Resultado Esperado |
-|---:|:---:|:---|
-| `-0.1` | CE3 | Sanitizado → `0.0` |
-| `0.0` | CE1 | `0.0` (piso válido) |
-| `0.1` | CE1 | `0.1` |
-| `69.9` | CE1 | `69.9` (abaixo do limiar crítico) |
-| `70.0` | CE2 | `70.0` (limiar crítico) |
-| `70.1` | CE2 | `70.1` |
-| `99.9` | CE2 | `99.9` |
-| `100.0` | CE2 | `100.0` (teto válido) |
-| `100.1` | CE4 | Sanitizado → `100.0` |
+**Valores-limite testados:**
 
----
+| Entrada | Resultado esperado |
+|---:|---:|
+| -0,1 | 0 |
+| 0 | 0 |
+| 0,1 | 0,1 |
+| 69,9 | 69,9 |
+| 70 | 70 |
+| 100 | 100 |
+| 100,1 | 100 |
+| NaN / ±Inf | `ValueError` |
 
-## 2. Rotina 2 — Distância Euclidiana 3D / Invasão Espacial (`d` em cm)
+Os valores 69,9 e 70 verificam preservação numérica; não comprovam acionamento de alerta ao atingir 70.
 
-Fórmula aplicada pelo módulo de vídeo (MediaPipe):
+### 1.2 Rotina 2 — Distância Euclidiana e Invasão Espacial
 
-$$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2}$$
+A função `avaliar_invasao_espacial()` classifica a distância entre pontos com base em um limiar experimental de 35 unidades, tratado no protótipo como centímetros.
 
-### 2.1 Particionamento em Classes de Equivalência
+\[
+d=\sqrt{(x_2-x_1)^2+(y_2-y_1)^2+(z_2-z_1)^2}
+\]
 
-| Classe | Faixa / Condição | Comportamento Esperado |
-|:---|:---|:---|
-| **CE1 (Válida)** | d > 35.0 cm | Fora da zona de invasão → `SEM_INVASAO` |
-| **CE2 (Válida)** | 0.0 ≤ d ≤ 35.0 cm | Zona crítica → `TRIGGER_ESPACIAL` |
-| **CE3 (Inválida)** | d < 0.0 | Distância fisicamente impossível → `DISTANCIA_INVALIDA` |
-| **CE4 (Inválida)** | NaN ou Inf | Erro de inferência do MediaPipe → `ENTRADA_INVALIDA` (BUG-01 corrigido) |
+| Classe | Condição | Resultado esperado |
+|---|---|---|
+| CE1 — Válida | d > 35 | `SEM_INVASAO` |
+| CE2 — Válida | 0 ≤ d ≤ 35 | `TRIGGER_ESPACIAL` |
+| CE3 — Inválida | d < 0 | `DISTANCIA_INVALIDA` |
+| CE4 — Inválida | NaN ou Inf | `ENTRADA_INVALIDA` |
 
-### 2.2 Análise de Valor-Limite (AVL)
+**Valores-limite testados:**
 
-| Valor de Teste | Classe | Resultado Esperado |
-|---:|:---:|:---|
-| `-0.1` | CE3 | `DISTANCIA_INVALIDA` |
-| `0.0` | CE2 | `TRIGGER_ESPACIAL` (piso da zona crítica) |
-| `0.1` | CE2 | `TRIGGER_ESPACIAL` |
-| `34.9` | CE2 | `TRIGGER_ESPACIAL` |
-| `35.0` | CE2 | `TRIGGER_ESPACIAL` (limite superior da zona crítica, inclusivo) |
-| `35.1` | CE1 | `SEM_INVASAO` |
-| `float("nan")` | CE4 | `ENTRADA_INVALIDA` |
-| `float("inf")` | CE4 | `ENTRADA_INVALIDA` |
+| Entrada | Resultado esperado |
+|---:|---|
+| -0,1 | DISTANCIA_INVALIDA |
+| 0 / 0,1 | TRIGGER_ESPACIAL |
+| 34,9 / 35 | TRIGGER_ESPACIAL |
+| 35,1 | SEM_INVASAO |
+| NaN / Inf | ENTRADA_INVALIDA |
 
----
+Foram também testados limites configuráveis inválidos, incluindo `NaN`, infinito e valores negativos.
 
-## 3. Tabela de Decisão — Fusão Multimodal Local
+**Limitação:** o cálculo geométrico é válido para coordenadas no mesmo referencial. A correspondência do limiar com 35 centímetros físicos depende de calibração e não foi demonstrada nesta suíte.
 
-| Condições / Regras | Regra 1 | Regra 2 | Regra 3 | Regra 4 |
-|:---|:---:|:---:|:---:|:---:|
-| Vídeo detecta invasão (`TRIGGER_ESPACIAL`) | F | V | F | V |
-| Áudio detecta pânico/grito (≥ limiar YAMNet) | F | F | V | V |
-| Decaimento temporal ativo (`time_decay`) | V | F | F | F |
-| **Ação do Sistema** | `MANTER_ESTADO` | `ACUMULAR_RISCO` | `ACUMULAR_RISCO` | `ACIONAR_ALERTA_LOCAL` |
+## 2. Tabela de Decisão — Fusão Multimodal
 
----
+A função `avaliar_threshold_multimodal()` considera os triggers de vídeo e áudio e o indicador de decaimento temporal.
 
-## 4. Análise de Usabilidade & IHC (App Simulador React Native)
+| Regra | Vídeo | Áudio | Decaimento | Ação esperada |
+|---|---|---|---|---|
+| TD-01 | F | F | F | MANTER_ESTADO |
+| TD-02 | F | V | F | ACUMULAR_RISCO |
+| TD-03 | V | F | F | ACUMULAR_RISCO |
+| TD-04 | V | V | F | ACIONAR_ALERTA_LOCAL |
+| TD-05 | F | F | V | MANTER_ESTADO |
+| TD-06 | F | V | V | MANTER_ESTADO |
+| TD-07 | V | F | V | MANTER_ESTADO |
+| TD-08 | V | V | V | MANTER_ESTADO |
 
-| Critério | Avaliação |
-|:---|:---|
-| **Affordance e Visibilidade de Status** | Indicador discreto (ícone verde/vermelho) no rodapé da interface, sinalizando que o SDK está ativo e monitorando sem obstruir comandos de navegação. |
-| **Comunicabilidade** | Em caso de revogação de permissão de câmera ou microfone no Android, a interface exibe aviso imediato e claro informando a indisponibilidade do monitoramento. |
-| **Prevenção de Erros** | A exigência de convergência multimodal (vídeo + áudio) **e** ausência de decaimento temporal evita falsos positivos por ruídos isolados cotidianos. |
+As oito combinações foram validadas por testes parametrizados do Pytest.
 
----
+A implementação atual estabelece prioridade para `time_decay=True`, retornando `MANTER_ESTADO`. Não realiza cálculo numérico de acúmulo, redução temporal ou comparação do score com 70.
 
-## 5. Casos de Teste Formais
+## 3. Análise Crítica de IHC e Usabilidade
 
-| ID | Cenário | Pré-condições | Passos de Execução | Oráculo (Resultado Esperado) |
-|:---|:---|:---|:---|:---|
-| **CT-01** | Disparo por Limiar Crítico | SDK ativo localmente; `time_decay = False` | 1. Simular invasão espacial (d ≤ 35 cm → `video_trigger = True`). 2. Injetar trigger acústico (`audio_trigger = True`). | Retorna `ACIONAR_ALERTA_LOCAL`. |
-| **CT-02** | Decaimento Temporal | Score parcial acumulado (`Score = 40`) | 1. Ativar flag `time_decay = True` sem novos estímulos de vídeo ou áudio. | Retorna `MANTER_ESTADO`; score não avança. |
-| **CT-03** | Sanitização de Entradas Inválidas | Módulos instanciados | 1. Passar `Score = -5` → verificar sanitização. 2. Passar coordenada `NaN` → verificar rejeição. | Sistema sanitiza/rejeita sem lançar exceção não tratada. |
+Foi realizada uma inspeção estática das telas de login, cadastro e menu do aplicativo demonstrativo PAMIA, desenvolvido em React Native. A avaliação considerou affordance, comunicabilidade, visibilidade do estado do sistema e prevenção de erros, com base nas heurísticas de Nielsen.
+
+| Critério | Observação | Proposta de melhoria |
+|---|---|---|
+| Affordance falsa | Cartões do menu possuem aparência interativa, mas não executam ações | Implementar navegação demonstrativa ou indicar opções indisponíveis |
+| Comunicabilidade | Login e cadastro simulam operações sem informar explicitamente essa condição | Identificar as telas como demonstração, sem autenticação ou persistência real |
+| Prevenção de erros | Validação de e-mail exige `.com`, rejeitando domínios legítimos | Utilizar validação de formato mais abrangente |
+| Visibilidade do estado | Não há confirmação explícita de que o cadastro é apenas simulado | Apresentar mensagem informativa antes de retornar à tela anterior |
+
+**Delimitação do protótipo:** não serão implementados backend de autenticação, banco de dados de usuários ou persistência de cadastro nesta etapa. Essas funcionalidades são simuladas exclusivamente para demonstrar o fluxo de navegação.
+
+A inspeção identificou oportunidades de melhoria relacionadas à clareza das interações e à prevenção de erros. As observações foram fundamentadas no código-fonte React Native, não em testes presenciais com usuários.
+
+## 4. Casos de Teste Formais
+
+| ID | Cenário e pré-condição | Procedimento | Resultado esperado |
+|---|---|---|---|
+| CT-01 | Vídeo e áudio ativos, decaimento falso | Executar `avaliar_threshold_multimodal(True, True, False)` | ACIONAR_ALERTA_LOCAL |
+| CT-02 | Decaimento ativo | Executar a função com vídeo e áudio ativos e `time_decay=True` | MANTER_ESTADO |
+| CT-03 | Score negativo | Executar `sanitizar_score(-5)` | 0 |
+| CT-04 | Score NaN | Executar `sanitizar_score(NaN)` | `ValueError` |
+| CT-05 | Distância de 35 | Executar `avaliar_invasao_espacial(35)` | TRIGGER_ESPACIAL |
+| CT-06 | Distância de 35,1 | Executar `avaliar_invasao_espacial(35.1)` | SEM_INVASAO |
+| CT-07 | Limite espacial inválido | Executar com limite `NaN`, infinito ou negativo | Não retornar classificação espacial normal |
+| CT-08 | Coordenada 3D inválida | Executar cálculo com uma coordenada NaN | `ValueError` |
+| CT-09 | Todas as condições booleanas | Executar os oito cenários parametrizados | Resultados conforme tabela de decisão |
+
+**Ambiente:** Linux, Python 3.13.3, Pytest 9.2.0.
+
+**Resultado da suíte:** 32 testes aprovados e 100% de cobertura das instruções e branches instrumentados nos módulos auxiliares `geometria.py` e `threshold.py`.
+
+Os casos acima representam uma seleção formal dos cenários automatizados. A avaliação da interface e a integração com os modelos reais permanecem pendentes de evidências específicas.
+
+## 5. Conclusão
+
+As técnicas de classes de equivalência, valores-limite e tabela de decisão permitiram validar comportamentos definidos e identificar problemas de tratamento de entradas inválidas, posteriormente corrigidos.
+
+Os resultados demonstram conformidade dos componentes auxiliares com os casos testados, sem representar validação integral do SDK móvel, da inferência acústica e visual ou da experiência de uso.
+
+## Referências
+
+- ISO/IEC/IEEE 29119 — *Software Testing*.
+- PRESSMAN, R.; MAXIM, B. *Engenharia de Software: Uma Abordagem Profissional*. 9. ed., 2021.
+- NIELSEN, J. *10 Usability Heuristics for User Interface Design*. Nielsen Norman Group.
