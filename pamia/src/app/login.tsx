@@ -48,6 +48,16 @@ export default function TelaLogin() {
         <Text style={styles.titleText}>Login</Text>
         <Text style={styles.userTypeText}>Modo: {userType}</Text>
 
+        <View style={styles.demoNotice}>
+          <Text style={styles.demoNoticeTitle}>
+            Modo demonstração
+          </Text>
+          <Text style={styles.demoNoticeText}>
+            Este aplicativo é um protótipo. O acesso é simulado,
+            sem autenticação ou validação de credenciais.
+          </Text>
+        </View>
+
         <View style={styles.formContainer}>
           <TextInput
             style={styles.input}
@@ -160,5 +170,25 @@ const styles = StyleSheet.create({
     color: '#8A8A9E',
     fontSize: 14,
     fontWeight: '500',
+  },
+  demoNotice: {
+    backgroundColor: '#25243D',
+    borderWidth: 1,
+    borderColor: '#6C63FF',
+    borderRadius: 8,
+    padding: 14,
+    marginBottom: 20,
+    width: '100%',
+  },
+  demoNoticeTitle: {
+    color: '#B8B3FF',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  demoNoticeText: {
+    color: '#D0D0DF',
+    fontSize: 13,
+    lineHeight: 19,
   },
 });
