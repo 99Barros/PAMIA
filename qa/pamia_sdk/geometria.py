@@ -35,28 +35,23 @@ def calcular_distancia_euclidiana(
     dz = ponto_b[2] - ponto_a[2]
     return math.sqrt(dx**2 + dy**2 + dz**2)
 
-
-def avaliar_invasao_espacial(distancia_cm: float, limite_cm: float = 35.0) -> str:
-    """
-    Classifica a distância conforme classes de equivalência e análise de valor-limite (AVL).
-
-    Classes de Equivalência:
-        CE1 (Válida) — d > 35.0  → SEM_INVASAO
-        CE2 (Válida) — 0.0 ≤ d ≤ 35.0 → TRIGGER_ESPACIAL
-        CE3 (Inválida) — d < 0.0 → DISTANCIA_INVALIDA
-        CE4 (Inválida) — NaN / Inf → ENTRADA_INVALIDA
-
-    Args:
-        distancia_cm: Distância calculada em centímetros.
-        limite_cm: Limiar de invasão espacial (padrão = 35.0 cm).
-
-    Returns:
-        String com o estado classificado.
-    """
-    if math.isnan(distancia_cm) or math.isinf(distancia_cm):
+def avaliar_invasao_espacial(
+    distancia_cm: float,
+    limite_cm: float = 35.0
+) -> str:
+    if not math.isfinite(distancia_cm):
         return "ENTRADA_INVALIDA"
+
     if distancia_cm < 0.0:
         return "DISTANCIA_INVALIDA"
+
+    if not math.isfinite(limite_cm):
+        return "ENTRADA_INVALIDA"
+
+    if limite_cm < 0.0:
+        return "DISTANCIA_INVALIDA"
+
     if distancia_cm <= limite_cm:
         return "TRIGGER_ESPACIAL"
+
     return "SEM_INVASAO"

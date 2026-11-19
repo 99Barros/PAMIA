@@ -1,3 +1,5 @@
+import math
+
 """
 threshold.py — Sanitização de score e lógica de fusão multimodal (Edge Computing).
 
@@ -8,22 +10,15 @@ Módulo local do SDK PAMIA:
 
 
 def sanitizar_score(score: float) -> float:
-    """
-    Garante que o score acumulado permaneça no intervalo válido [0.0, 100.0].
+    if not math.isfinite(score):
+        raise ValueError("Score inválido: NaN ou infinito.")
 
-    Correção do BUG-02: score negativo em transição rápida reduzia o acumulador
-    abaixo de zero. A sanitização aplica piso em 0.0 e teto em 100.0.
-
-    Args:
-        score: Valor bruto do acumulador de risco.
-
-    Returns:
-        Score sanitizado dentro do intervalo [0.0, 100.0].
-    """
     if score < 0.0:
         return 0.0
+
     if score > 100.0:
         return 100.0
+
     return score
 
 

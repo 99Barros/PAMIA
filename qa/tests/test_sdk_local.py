@@ -41,24 +41,26 @@ def limite_zona_passageiro() -> tuple[float, float, float]:
 # Tabela de Decisão Multimodal (CT-01 / CT-02 / CT-03)
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     "video, audio, decay, esperado",
     [
-        # Regra 1 — Decaimento ativo: sempre MANTER_ESTADO independente dos triggers
-        (False, False, True,  "MANTER_ESTADO"),
-        # Regra 4 — Ambos triggers ativos: ACIONAR_ALERTA_LOCAL (CT-01)
-        (True,  True,  False, "ACIONAR_ALERTA_LOCAL"),
-        # Regra 2 — Apenas vídeo: acumular risco
-        (True,  False, False, "ACUMULAR_RISCO"),
-        # Regra 3 — Apenas áudio: acumular risco
-        (False, True,  False, "ACUMULAR_RISCO"),
-        # Default — nenhum trigger, sem decaimento: manter estado
         (False, False, False, "MANTER_ESTADO"),
+        (False, True,  False, "ACUMULAR_RISCO"),
+        (True,  False, False, "ACUMULAR_RISCO"),
+        (True,  True,  False, "ACIONAR_ALERTA_LOCAL"),
+
+        (False, False, True, "MANTER_ESTADO"),
+        (False, True,  True, "MANTER_ESTADO"),
+        (True,  False, True, "MANTER_ESTADO"),
+        (True,  True,  True, "MANTER_ESTADO"),
     ],
 )
-def test_threshold_multimodal(video: bool, audio: bool, decay: bool, esperado: str):
-    """Valida a Tabela de Decisão multimodal local via parametrização (Módulo B — Regras 1-4)."""
-    assert avaliar_threshold_multimodal(video, audio, decay) == esperado
+def test_threshold_multimodal(video, audio, decay, esperado):
+    assert avaliar_threshold_multimodal(
+        video, audio, decay
+    ) == esperado
+
 
 
 # ---------------------------------------------------------------------------
@@ -125,9 +127,13 @@ def test_avl_invasao_espacial(distancia: float, esperado: str):
 
 def test_calculo_distancia_e_inferencia_mockada(limite_zona_passageiro):
     """
-    Testa o cálculo geométrico 3D e isola o extrator de pose (MediaPipe) via Mock.
+Valida o cálculo geométrico e a classificação de invasão.
 
-    Cenário: mão do motorista em (20.0, 0.0, 0.0) → distância = 20 cm → TRIGGER_ESPACIAL.
+Utiliza unittest.mock.Mock para simular coordenadas
+produzidas por um extrator de pose.
+
+O teste não executa o MediaPipe e não valida sua
+integração com a aplicação móvel.
     """
     extrator_pose_mock = Mock(return_value=(20.0, 0.0, 0.0))
     keypoint_mao = extrator_pose_mock()
