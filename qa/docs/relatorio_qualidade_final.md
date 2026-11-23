@@ -19,21 +19,26 @@ python -m pytest tests/ -v \
   --junitxml=resultado-testes.xml
 ```
 
-### Resultados da última execução informada
+### Resultados Finais da Execução Automatizada
 
-| Métrica | Resultado |
+A execução final da suíte foi realizada em 23/11/2026, em ambiente Linux, utilizando Python 3.13.3, Pytest 9.2.0 e pytest-cov 7.1.0.
+
+Foram coletados 32 casos de teste, todos executados e aprovados, sem falhas ou erros. O tempo total da execução foi de 0,48 segundo.
+
+| Indicador | Resultado |
 |---|---:|
-| Testes executados | 32 |
-| Testes aprovados | 32 |
-| Testes reprovados | 0 |
+| Casos executados | 32 |
+| Casos aprovados | 32 |
+| Casos reprovados | 0 |
 | Taxa de aprovação | 100% |
-| Instruções cobertas | 39/39 |
-| Branches cobertos | 26/26 |
-| Cobertura dos módulos auxiliares | 100% |
+| Instruções cobertas | 39 de 39 |
+| Branches cobertos | 26 de 26 |
+| Cobertura total dos módulos auxiliares | 100% |
+| Tempo total da suíte | 0,48 segundo |
 
-A cobertura compreende exclusivamente os arquivos `qa/pamia_sdk/geometria.py` e `qa/pamia_sdk/threshold.py`. Não representa a cobertura total do aplicativo PAMIA.
+A análise de cobertura contemplou os módulos `qa/pamia_sdk/geometria.py` e `qa/pamia_sdk/threshold.py`. Esses resultados demonstram a cobertura integral dos componentes auxiliares instrumentados, não representando cobertura integral do aplicativo móvel ou dos modelos de inteligência artificial.
 
-A suíte evoluiu de 23 para 29 e, posteriormente, 32 testes, incluindo verificações adicionais de entradas inválidas e cenários de decisão multimodal.
+O arquivo `qa/resultado-testes.xml` foi gerado automaticamente pelo Pytest como evidência da execução.
 
 ## 2. Matriz de Rastreabilidade
 
