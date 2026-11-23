@@ -10,6 +10,12 @@ import vosk
 import json
 import time
 
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
 # ==========================================
 # CONFIGURAÇÕES GERAIS DE ÁUDIO
 # ==========================================
@@ -21,7 +27,7 @@ DEVICE_INDEX = None
 audio_queue = queue.Queue(maxsize=5) # Guarda no maximo 5 segundos da fila
 
 # ==========================================
-# CLASSIFICADOR YAMNET
+# CLASSIFICADOR YAMNETs
 # ==========================================
 class ClassificadorYAMNet:
     def __init__(self, model_path='yamnet.tflite', class_map_path='yamnet_class_map.csv'):
@@ -30,7 +36,7 @@ class ClassificadorYAMNet:
         
         print("🧠 [IA] Carregando modelo YAMNet na memória (Edge)...")
         # Usando tf.lite.Interpreter garantimos a compatibilidade futura com Android
-        self.interpreter = tf.lite.Interpreter(model_path=model_path)
+        self.interpreter = tf.lite.Interpreter(model_path=model_path,num_threads=1)
         self.interpreter.allocate_tensors()
         
         self.input_details = self.interpreter.get_input_details()
