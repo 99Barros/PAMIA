@@ -113,7 +113,19 @@ Uma conversão simplificada do esforço estimado pela capacidade técnica dispon
 
 Os outros dois integrantes atuam prioritariamente na documentação. A estimativa possui caráter acadêmico e não considera detalhadamente código reutilizado, produtividade histórica e dedicação documental.
 
-## 6. Considerações Finais
+
+## 6. Matriz de Riscos Técnicos
+
+| Risco | Probabilidade | Impacto | Estratégia de mitigação |
+|---|---|---|---|
+| Falhas na detecção espacial | Média | Alto | Testes de valores-limite e entradas inválidas |
+| Falsos positivos na decisão multimodal | Média | Alto | Tabela de decisão e testes parametrizados |
+| Consumo excessivo de recursos no Android | Alta | Alto | Microbenchmark local e futura validação no dispositivo |
+| Falhas na integração audiovisual | Média | Alto | Mocks, testes auxiliares e integração incremental |
+
+Os riscos foram classificados qualitativamente conforme seu impacto potencial no protótipo. Os testes automatizados atuais mitigam parcialmente esses riscos, sem comprovar o comportamento integral dos modelos de IA ou do aplicativo Android. 
+
+## 7. Considerações Finais
 
 O plano estabelece uma estratégia reproduzível de verificação funcional, análise de limites, automação e registro de defeitos. Os 32 testes aprovados e a cobertura integral dos módulos auxiliares representam resultados positivos no escopo avaliado.
 
