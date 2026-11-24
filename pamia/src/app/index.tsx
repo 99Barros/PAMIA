@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import SdkVersion from '../components/sdk-version';
 
 export default function TelaInicial() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function TelaInicial() {
       <View style={styles.logoContainer}>
         <Text style={styles.logoText}>PAMIA</Text>
         <Text style={styles.subtitleText}>Prevenção ao Assédio contra Mulheres com Inteligência Artificial</Text>
+        <SdkVersion />
       </View>
 
       <View style={styles.buttonsContainer}>
